@@ -5,49 +5,66 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <style>
+        body {
+      margin: 0;
+      background-color: rgb(240, 239, 235);
+      font-family: sans-serif;
+    }
     
     .parent {
       display:grid;
-      width: 500px;
-      grid-template-columns: 300px 200px ;
-      grid-template-rows: repeat(4, 1fr);
+      width: 450px;
+      grid-template-columns: 250px 200px ;
+      grid-template-rows: 50px auto 50px 50px;
       grid-column-gap: 0px;
       grid-row-gap: 0px;
-      border: 2px solid black;
+      /* box-sizing: border-box; */
+      margin: 15px;
+      padding: 20px;
+      background-color: rgb(255, 255, 255);
+      /* border: 2px solid black; */
+      box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 
       }
 
-      .div1 { 
+      .bild { 
         grid-area: 1 / 1 / 5 / 2; 
-        background-color: rgb(137, 137, 167);
-        height: 300px;
+        background-color: rgb(169, 167, 139);        
         }
-      .div2 { 
+
+      .titel { 
         grid-area: 1 / 2 / 2 / 3; 
-        background-color: rgb(63, 63, 98);
+        background-color: rgb(255, 255, 255);
+        font-weight: bold;
+        font-size: large;
+        padding: 5px;
+        
       }
-      .div3 { 
+      .beschreibung { 
+        padding: 5px;
         grid-area: 2 / 2 / 3 / 3; 
-        background-color: rgb(161, 139, 66);
+        background-color: rgb(255, 255, 255);
       }
-      .div4 { 
+      .email { 
+        padding: 5px;
         grid-area: 3 / 2 / 4 / 3; 
-        background-color: rgb(74, 74, 178);
+        background-color: rgb(255, 255, 255);
       }
-      .div5 { 
+      .rubrik { 
+        padding: 5px;
         grid-area: 4 / 2 / 5 / 3; 
-        background-color: rgb(53, 75, 92);
+        background-color: rgb(255, 255, 255);
       } 
 
   </style>
 </head>
 <body>
   <div class="parent">
-    <div class="div1">1 </div>
-    <div class="div2">2 </div>
-    <div class="div3">3 </div>
-    <div class="div4">4 </div>
-    <div class="div5">5 </div>
+    <div class="bild"></div>
+    <div class="titel">TITEL</div>
+    <div class="beschreibung">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor sadipscing elitrLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor sadipscing elitrLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor sadipscing elitr, sed diam nonumy eirmod tempor </div>
+    <div class="email">example@email.com</div>
+    <div class="rubrik">Bücher/Programmieren</div>
     </div> 
   
 </body>
