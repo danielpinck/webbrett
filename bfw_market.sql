@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 15, 2024 at 02:25 PM
+-- Generation Time: Apr 16, 2024 at 01:52 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -29,12 +29,19 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `anzeige` (
   `aid` int(11) NOT NULL,
-  `name` varchar(255) NOT NULL,
+  `titel` varchar(255) NOT NULL,
   `decription` varchar(500) NOT NULL,
   `date` date NOT NULL DEFAULT current_timestamp(),
-  `picture` varchar(255) NOT NULL,
+  `picture` varchar(255) DEFAULT NULL,
   `uid` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `anzeige`
+--
+
+INSERT INTO `anzeige` (`aid`, `titel`, `decription`, `date`, `picture`, `uid`) VALUES
+(1, 'Learning Python 101', '', '2024-04-16', NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -73,8 +80,15 @@ CREATE TABLE `user` (
   `uid` int(11) NOT NULL,
   `display_name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `rolle` tinyint(1) NOT NULL
+  `rolle` varchar(15) NOT NULL DEFAULT 'Nein'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`uid`, `display_name`, `email`, `rolle`) VALUES
+(1, 'Daniel Pinck', 'testmail@website.de', 'Nein');
 
 -- --------------------------------------------------------
 
@@ -132,7 +146,7 @@ ALTER TABLE `veroeffentlicht`
 -- AUTO_INCREMENT for table `anzeige`
 --
 ALTER TABLE `anzeige`
-  MODIFY `aid` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `aid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `book`
@@ -150,7 +164,7 @@ ALTER TABLE `rubrik`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables
@@ -160,7 +174,7 @@ ALTER TABLE `user`
 -- Constraints for table `anzeige`
 --
 ALTER TABLE `anzeige`
-  ADD CONSTRAINT `anzeige_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user` (`uid`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `anzeige_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user` (`uid`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `book`
