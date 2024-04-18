@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 17, 2024 at 03:00 PM
+-- Generation Time: Apr 18, 2024 at 03:20 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -41,11 +41,8 @@ CREATE TABLE `anzeige` (
 --
 
 INSERT INTO `anzeige` (`aid`, `titel`, `description`, `date`, `picture`, `uid`) VALUES
-(1, 'Learning Python 101', '', '2024-04-16', NULL, 1),
-(2, 'Test', 'Test Text', '2024-04-17', NULL, 17),
-(4, 'Learning PHP', 'php is cool', '2024-04-17', NULL, 1),
-(5, 'Learning PHP', 'php is cool', '2024-04-17', NULL, 1),
-(6, 'Learning PHP', 'php is cool', '2024-04-17', NULL, 4);
+(19, 'Test', 'dsadsa', '2024-04-18', NULL, 1),
+(20, 'Test', 'dsadsa', '2024-04-18', NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -54,7 +51,9 @@ INSERT INTO `anzeige` (`aid`, `titel`, `description`, `date`, `picture`, `uid`) 
 -- (See below for the actual view)
 --
 CREATE TABLE `anzeigeview` (
-`titel` varchar(255)
+`aid` int(11)
+,`uid` int(11)
+,`titel` varchar(255)
 ,`date` date
 ,`description` varchar(500)
 ,`display_name` varchar(255)
@@ -80,6 +79,21 @@ CREATE TABLE `book` (
 -- --------------------------------------------------------
 
 --
+-- Stand-in structure for view `fullview`
+-- (See below for the actual view)
+--
+CREATE TABLE `fullview` (
+`titel` varchar(255)
+,`date` date
+,`description` varchar(500)
+,`display_name` varchar(255)
+,`email` varchar(255)
+,`name` varchar(25)
+);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `rubrik`
 --
 
@@ -93,10 +107,21 @@ CREATE TABLE `rubrik` (
 --
 
 INSERT INTO `rubrik` (`rid`, `name`) VALUES
-(1, 'Programmieren'),
 (2, 'Kleidung'),
-(3, 'Manga'),
-(4, 'Elektronik');
+(4, 'Elektronik'),
+(5, 'B&uuml;cher'),
+(6, 'M&oumlbel');
+
+-- --------------------------------------------------------
+
+--
+-- Stand-in structure for view `rubrikview`
+-- (See below for the actual view)
+--
+CREATE TABLE `rubrikview` (
+`name` varchar(25)
+,`aid` int(11)
+);
 
 -- --------------------------------------------------------
 
@@ -143,6 +168,16 @@ CREATE TABLE `veroeffentlicht` (
   `aid` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `veroeffentlicht`
+--
+
+INSERT INTO `veroeffentlicht` (`rid`, `aid`) VALUES
+(2, 19),
+(4, 19),
+(2, 20),
+(4, 20);
+
 -- --------------------------------------------------------
 
 --
@@ -150,7 +185,25 @@ CREATE TABLE `veroeffentlicht` (
 --
 DROP TABLE IF EXISTS `anzeigeview`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `anzeigeview`  AS SELECT `a`.`titel` AS `titel`, `a`.`date` AS `date`, `a`.`description` AS `description`, `u`.`display_name` AS `display_name`, `u`.`email` AS `email` FROM (`anzeige` `a` join `user` `u` on(`u`.`uid` = `a`.`uid`)) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `anzeigeview`  AS SELECT `a`.`aid` AS `aid`, `u`.`uid` AS `uid`, `a`.`titel` AS `titel`, `a`.`date` AS `date`, `a`.`description` AS `description`, `u`.`display_name` AS `display_name`, `u`.`email` AS `email` FROM (`anzeige` `a` join `user` `u` on(`u`.`uid` = `a`.`uid`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `fullview`
+--
+DROP TABLE IF EXISTS `fullview`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `fullview`  AS SELECT `a`.`titel` AS `titel`, `a`.`date` AS `date`, `a`.`description` AS `description`, `u`.`display_name` AS `display_name`, `u`.`email` AS `email`, `r`.`name` AS `name` FROM (((`anzeige` `a` join `user` `u` on(`a`.`uid` = `u`.`uid`)) join `veroeffentlicht` `v` on(`a`.`aid` = `v`.`aid`)) join `rubrik` `r` on(`v`.`rid` = `r`.`rid`)) ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure for view `rubrikview`
+--
+DROP TABLE IF EXISTS `rubrikview`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `rubrikview`  AS SELECT `r`.`name` AS `name`, `v`.`aid` AS `aid` FROM (`rubrik` `r` join `veroeffentlicht` `v` on(`r`.`rid` = `v`.`rid`)) ;
 
 --
 -- Indexes for dumped tables
@@ -175,6 +228,7 @@ ALTER TABLE `book`
 --
 ALTER TABLE `rubrik`
   ADD PRIMARY KEY (`rid`);
+ALTER TABLE `rubrik` ADD FULLTEXT KEY `name` (`name`);
 
 --
 -- Indexes for table `user`
@@ -186,8 +240,8 @@ ALTER TABLE `user`
 -- Indexes for table `veroeffentlicht`
 --
 ALTER TABLE `veroeffentlicht`
-  ADD UNIQUE KEY `rid` (`rid`),
-  ADD UNIQUE KEY `aid` (`aid`);
+  ADD KEY `rid` (`rid`) USING BTREE,
+  ADD KEY `aid` (`aid`) USING BTREE;
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -197,7 +251,7 @@ ALTER TABLE `veroeffentlicht`
 -- AUTO_INCREMENT for table `anzeige`
 --
 ALTER TABLE `anzeige`
-  MODIFY `aid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `aid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `book`
@@ -209,7 +263,7 @@ ALTER TABLE `book`
 -- AUTO_INCREMENT for table `rubrik`
 --
 ALTER TABLE `rubrik`
-  MODIFY `rid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `rid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `user`
@@ -237,8 +291,8 @@ ALTER TABLE `book`
 -- Constraints for table `veroeffentlicht`
 --
 ALTER TABLE `veroeffentlicht`
-  ADD CONSTRAINT `veroeffentlicht_ibfk_1` FOREIGN KEY (`rid`) REFERENCES `rubrik` (`rid`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `veroeffentlicht_ibfk_2` FOREIGN KEY (`aid`) REFERENCES `anzeige` (`aid`) ON DELETE NO ACTION ON UPDATE CASCADE;
+  ADD CONSTRAINT `veroeffentlicht_ibfk_1` FOREIGN KEY (`rid`) REFERENCES `rubrik` (`rid`),
+  ADD CONSTRAINT `veroeffentlicht_ibfk_2` FOREIGN KEY (`aid`) REFERENCES `anzeige` (`aid`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
