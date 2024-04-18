@@ -39,15 +39,12 @@ function addUser($display_name, $email, $privileges, $conn) {
    
   switch (true) {
     case $check_exists_count > 0:
-      // echo "Ein Benutzer mit dem Namen <b>" . $display_name . "</b> und der E-mail <b>" . $email . "</b> existiert bereits. ID: " . $exists_id["uid"];
       return $exists_id["uid"];
       break;
     case $check_email_count > 0:
-      // echo "Ein Benutzer mit der E-mail <b>" . $email . "</b> existiert bereits";
       return false;
       break;
     case $check_name_count > 0:
-      // echo "Ein Benutzer mit dem Namen <b>" . $display_name . "</b> existiert bereits";
       return false;
       break;
     default: 
@@ -66,18 +63,28 @@ function addUser($display_name, $email, $privileges, $conn) {
   }
 function addItem($titel, $description, $conn, $user_id) {
   $sql_anzeige = "INSERT INTO anzeige (titel, description, uid) VALUES ('$titel', '$description', '$user_id')";
-  if ($conn->query($sql_anzeige) === TRUE) {
+  // $sql_rubrik = "INSERT INTO veroeffentlicht (rid, aid) VALUES ('$rubrik_id', $anzeige_id)";
+  if(!empty($_POST['rubrik'])) {
+    if ($conn->query($sql_anzeige) === TRUE) {
+      $insertIdAnzeige = $conn->insert_id;
+      foreach ($_POST['rubrik'] as $rubrik_id) {
+        $sql_rubrik = "INSERT INTO veroeffentlicht (rid, aid) VALUES ('$rubrik_id', $insertIdAnzeige)";
+        $conn->query($sql_rubrik);
+     }
       
-    echo "Die Anzeige wurde erfolgreich angelegt";
+    echo "Die Anzeige wurde erfolgreich angelegt. Die ID ist ";
+    
   } else {
     echo "Error: " . $sql . "<br>" . $conn->error;
   }
-
+  } else {
+    echo "Wähle mindestens eine Rubrik aus";
+  } 
   }
 
 function rubrikMenu($conn) {
-  $sql = "SELECT name FROM rubrik";
-  $result = $conn->query($sql);
+  $rubrikName = "SELECT name FROM rubrik";
+  $result = $conn->query($rubrikName);
 
   while ($row = $result->fetch_assoc()) {
     
@@ -85,5 +92,48 @@ function rubrikMenu($conn) {
     }
 
   }
+
+function rubrikGenerate($conn) {
+  $rubrikName = "SELECT * FROM rubrik";
+
+  $result = $conn->query($rubrikName);
+
+  while ($row = $result->fetch_assoc()) {
+
+      echo "<input type='checkbox' name='rubrik[]' value=" . $row["rid"] . "><label for='rubrik[]'>" . $row["name"] . "</label>";
+    }
+
+  }
+
+
+
+function showItems($conn) {
+  // $create_view = "CREATE VIEW AnzeigeView AS 
+  // SELECT a.titel, a.date, a.description, u.display_name, u.email
+  // FROM anzeige a 
+  // JOIN user u ON u.uid = a.uid";
+  $anzeige = "SELECT * FROM anzeigeview";
+  $anzeige_result = $conn->query($anzeige);
+  $anzeige_rubrik = "SELECT * FROM rubrikView";
+  $anzeige_rubrik_result = $conn->query($anzeige_rubrik);
+  $rubrik_row = $anzeige_rubrik_result->fetch_assoc();
+  if ($anzeige_result->num_rows > 0) {
+    while ($row = $anzeige_result->fetch_assoc() ) {
+      echo '<div class="parent">';
+      // echo '<div class="bild"></div>';
+      echo '<div class="bild"></div>';
+      echo '<div class="titel">' . $row["titel"] . '</div>';
+      echo '<div class="beschreibung">ID : ' . $row["aid"] . 'Eingestellt: ' . $row["date"] . '<br>' . $row["description"] . '</div>';
+      echo '<div class="email">' . $row["email"] . '/' . $row["display_name"] . '</div>';
+      echo '<div class="rubrik">' . var_dump($anzeige_rubrik_result) . '</div>';
+      echo '</div>';
+    } 
+
+  } else {
+    echo "0 results";
+  }
+
+}
   
 ?>
+

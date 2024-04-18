@@ -27,7 +27,16 @@
     rubrikMenu($conn);
     ?>
   </div>
+  <div class="flex-wrapper">
+  <div class="flex-layout">
+  <?php 
 
+  showItems($conn);
+  $conn->close();
+
+  ?>
+</div>
+</div>
 
   
 

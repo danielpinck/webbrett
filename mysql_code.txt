@@ -1,0 +1,28 @@
+ // $create_view = "CREATE VIEW FullView AS 
+  // SELECT a.titel, a.date, a.description, u.display_name, u.email, r.name
+  // FROM anzeige a 
+  // JOIN user u 
+  // ON a.uid = u.uid 
+  // JOIN veroeffentlicht v
+  // ON a.rid = v.rid
+  // JOIN rubrik r
+  // ON v.rid = r.rid
+  
+  // ";
+CREATE VIEW AnzeigeView AS 
+SELECT a.titel, a.date, a.description, u.display_name, u.email
+FROM anzeige a 
+JOIN user u 
+ON u.uid = a.uid
+FROM rubrik r
+JOIN veroeffentlicht v
+ON r.rid = v.rid
+
+$create_view = "CREATE VIEW rubrikView AS 
+SELECT r.name v.aid
+FROM rubrik r
+JOIN veroeffentlicht v
+ON r.rid = v.rid
+
+  
+  // ";

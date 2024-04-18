@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+ul {
+    margin: 0 auto;      /* center container */
+    width: 1200px;
+    padding-left: 0;     /* remove list padding */
+    font-size: 0;        /* remove inline-block white space;
+                            see https://stackoverflow.com/a/32801275/3597276 */
+}
+
+li {
+    display: inline-block;
+    background-color: aquamarine;
+    font-size: 18px;     /* restore font size removed in container */
+    list-style-type: none;
+    width: 150px;
+    height: 50px;
+    line-height: 50px;
+    margin: 15px 25px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+@media screen and (max-width: 430px) { ul { width: 200px; } }
+@media screen and (min-width: 431px) and (max-width: 630px) { ul { width: 400px; } }
+@media screen and (min-width: 631px) and (max-width: 830px) { ul { width:600px;  } }
+@media screen and (min-width: 831px) and (max-width: 1030px) { ul { width: 800px; } }
+@media screen and (min-width: 1031px) and (max-width: 1230px) { ul { width: 1000px; } }
+
+  </style>
+</head>
+<body>
+  <ul>
+    <li>1</li>
+    <li>2</li>
+    <li>3</li>
+    <li>4</li>
+    <li>5</li>
+    <li>6</li>
+</ul>
+
+  
+</body>
+</html>
