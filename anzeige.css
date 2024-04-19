@@ -14,6 +14,7 @@ body {
 .flex-header {
   display: flex;
   flex-wrap:wrap;
+  
   flex-direction: row;
   justify-content: space-around;
   background-color: white;
@@ -81,7 +82,8 @@ body {
 }
 
 textarea {
-  width:100%;
+  width:70%;
+  resize: none;
 }
 
 #titel {
@@ -91,8 +93,8 @@ textarea {
 .parent {
   display:grid;
   width:fit-content;
-  min-width: 292px;
-  grid-template-columns: 0px auto ;
+  min-width: 400px;
+  grid-template-columns: auto auto ;
   grid-template-rows: auto auto auto auto;
   grid-column-gap: 0px;
   grid-row-gap: 0px;

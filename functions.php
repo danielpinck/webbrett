@@ -61,18 +61,63 @@ function addUser($display_name, $email, $privileges, $conn) {
       
   }
   }
-function addItem($titel, $description, $conn, $user_id) {
-  $sql_anzeige = "INSERT INTO anzeige (titel, description, uid) VALUES ('$titel', '$description', '$user_id')";
-  // $sql_rubrik = "INSERT INTO veroeffentlicht (rid, aid) VALUES ('$rubrik_id', $anzeige_id)";
+
+function checkItem($conn) {
+  echo '<form action=' . $_SERVER["PHP_SELF"] . ' method="post" enctype="multipart/form-data">';
+  // echo '<form action=' . htmlspecialchars($_SERVER["PHP_SELF"]) . '?' . htmlspecialchars(SID) . ' method="post">';
+  echo '<input type="text" name="titel" placeholder="Titel" required><br>';
+  echo '<textarea name="description" rows="5" cols="33" placeholder="Beschreibung" required></textarea><br>';
+  echo '<label for="uploadfile">Bild hinzufügen (optional)</label><input type="file" name="uploadfile"><br>';
+  echo '<input type="text" name="display_name" placeholder="Name" required>';
+  echo '<input type="text" name="email" placeholder="E-Mail" required>';
+  echo '<input type="hidden" name="privileges" value="1"><br>';
+  rubrikGenerate($conn);
+  echo '<br><input type="Submit" value="Absenden">';
+  
+    if (isset($_POST["titel"]) and isset($_POST["description"]) and isset($_POST["email"]) and isset($_POST["display_name"]) and 
+!empty($_POST["titel"]) and !empty($_POST["description"]) and !empty($_POST["email"]) and !empty($_POST["display_name"])) { 
+
+      $titel = $_POST['titel'];    
+      $description = $_POST['description'];    
+      $display_name = $_POST['display_name'];
+      $email = $_POST['email'];
+      $privileges = $_POST['privileges'];
+      $image_name = $_FILES['uploadfile']['name'];
+      $temp_image_name = $_FILES['uploadfile']['name'];
+      $image_folder = "./img" - $image_name;
+ 
+      
+      $userCheck = addUser($display_name, $email, $privileges, $conn);
+      if ($userCheck) {
+        addItem($titel, $description, $conn, $userCheck, $image_name, $temp_image_name, $image_folder);
+        
+    } else {
+        echo "<br><br>Ein Benutzer mit dem Namen <b>" . $display_name . "</b> oder der E-mail <b>" . $email . "</b> existiert bereits.</form>";
+      }
+  }
+  }
+
+function addItem($titel, $description, $conn, $user_id, $image_name, $temp_image_name, $image_folder) {
+  
+
+  $sql_anzeige = "INSERT INTO anzeige (titel, description, uid, image) VALUES ('$titel', '$description', '$user_id', '$image_name')";
   if(!empty($_POST['rubrik'])) {
     if ($conn->query($sql_anzeige) === TRUE) {
       $insertIdAnzeige = $conn->insert_id;
       foreach ($_POST['rubrik'] as $rubrik_id) {
         $sql_rubrik = "INSERT INTO veroeffentlicht (rid, aid) VALUES ('$rubrik_id', $insertIdAnzeige)";
         $conn->query($sql_rubrik);
-     }
+    }
+    if (move_uploaded_file($tempname, $folder)) {
+      echo "<h3>  Image uploaded successfully!</h3>";
+    } else {
+        echo "<h3>  Failed to upload image!</h3>";
+    }
+
+
+
       
-    echo "Die Anzeige wurde erfolgreich angelegt. Die ID ist ";
+    echo "<br><br>Die Anzeige wurde erfolgreich angelegt. ";
     
   } else {
     echo "Error: " . $sql . "<br>" . $conn->error;
@@ -83,12 +128,12 @@ function addItem($titel, $description, $conn, $user_id) {
   }
 
 function rubrikMenu($conn) {
-  $rubrikName = "SELECT name FROM rubrik";
+  $rubrikName = "SELECT * FROM rubrik";
   $result = $conn->query($rubrikName);
 
   while ($row = $result->fetch_assoc()) {
     
-      echo "<div class='header-item-rubrik'><a href='?rubrik=" . $row["name"] . "'>"  . $row["name"] . "</a></div>";
+      echo "<div class='header-item-rubrik'><a href='?rubrik=" . $row["rid"] . "'>"  . mb_strtoupper($row["name"]) . "</a></div>";
     }
 
   }
@@ -105,35 +150,55 @@ function rubrikGenerate($conn) {
 
   }
 
-
-
-function showItems($conn) {
-  // $create_view = "CREATE VIEW AnzeigeView AS 
-  // SELECT a.titel, a.date, a.description, u.display_name, u.email
-  // FROM anzeige a 
-  // JOIN user u ON u.uid = a.uid";
-  $anzeige = "SELECT * FROM anzeigeview";
-  $anzeige_result = $conn->query($anzeige);
-  $anzeige_rubrik = "SELECT * FROM rubrikView";
-  $anzeige_rubrik_result = $conn->query($anzeige_rubrik);
-  $rubrik_row = $anzeige_rubrik_result->fetch_assoc();
-  if ($anzeige_result->num_rows > 0) {
-    while ($row = $anzeige_result->fetch_assoc() ) {
-      echo '<div class="parent">';
-      // echo '<div class="bild"></div>';
-      echo '<div class="bild"></div>';
-      echo '<div class="titel">' . $row["titel"] . '</div>';
-      echo '<div class="beschreibung">ID : ' . $row["aid"] . 'Eingestellt: ' . $row["date"] . '<br>' . $row["description"] . '</div>';
-      echo '<div class="email">' . $row["email"] . '/' . $row["display_name"] . '</div>';
-      echo '<div class="rubrik">' . var_dump($anzeige_rubrik_result) . '</div>';
-      echo '</div>';
-    } 
-
+function showItems($conn, $rubrik) {
+  $rubrik_id = "SELECT rid FROM rubrik";
+  
+  if ($rubrik == 0) {
+    $anzeige_query = "SELECT a.*, GROUP_CONCAT(r.name SEPARATOR ' / ') AS categories
+  FROM anzeigeview a
+  LEFT JOIN veroeffentlicht v ON a.aid = v.aid
+  INNER JOIN rubrik r ON v.rid = r.rid AND r.rid 
+  GROUP BY a.aid";
   } else {
-    echo "0 results";
+    $anzeige_query = "SELECT a.*, GROUP_CONCAT(r.name) AS categories
+  FROM anzeigeview a
+  LEFT JOIN veroeffentlicht v ON a.aid = v.aid 
+  INNER JOIN rubrik r ON v.rid = r.rid AND r.rid = $rubrik
+  GROUP BY a.aid";
   }
 
+  
+
+  $anzeige_result = $conn->query($anzeige_query);
+  if ($anzeige_result->num_rows > 0) {
+    while ($row = $anzeige_result->fetch_assoc()) {
+        echo '<div class="parent">';
+        echo '<div class="bild"><img src="./img/test.jpg" height="200px"></div>';
+        echo '<div class="titel">' . $row["titel"] . '</div>';
+        echo '<div class="beschreibung">ID : ' . $row["aid"] . 'Eingestellt: ' . $row["date"] . '<br>' . $row["description"] . '</div>';
+        echo '<div class="email">' . $row["email"] . '/' . $row["display_name"] . '</div>';
+        echo '<div class="rubrik">' . $row["categories"] . '</div>'; 
+        // echo var_dump($row["categories"]);
+        echo '</div>';
+        
+    }
+} else {
+    echo "0 results";
 }
+
+}
+
+function rubrikId($conn) {
+  $rubriId = "SELECT rid FROM rubrik";
+
+  $result = $conn->query($rubriId);
+
+  while ($row = $result->fetch_assoc()) {
+
+      yield $row["rid"];
+    }
+
+  }
   
 ?>
 

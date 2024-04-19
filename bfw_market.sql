@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 18, 2024 at 03:20 PM
+-- Generation Time: Apr 19, 2024 at 03:44 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -32,7 +32,8 @@ CREATE TABLE `anzeige` (
   `titel` varchar(255) NOT NULL,
   `description` varchar(500) NOT NULL,
   `date` date NOT NULL DEFAULT current_timestamp(),
-  `picture` varchar(255) DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `visibility` int(11) NOT NULL DEFAULT 0,
   `uid` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -40,9 +41,25 @@ CREATE TABLE `anzeige` (
 -- Dumping data for table `anzeige`
 --
 
-INSERT INTO `anzeige` (`aid`, `titel`, `description`, `date`, `picture`, `uid`) VALUES
-(19, 'Test', 'dsadsa', '2024-04-18', NULL, 1),
-(20, 'Test', 'dsadsa', '2024-04-18', NULL, 1);
+INSERT INTO `anzeige` (`aid`, `titel`, `description`, `date`, `image`, `visibility`, `uid`) VALUES
+(19, 'Test', 'dsadsa', '2024-04-18', NULL, 0, 1),
+(20, 'Test', 'dsadsa', '2024-04-18', NULL, 0, 1),
+(21, 'Tisch', 'Toller Tisch', '2024-04-19', NULL, 0, 18),
+(22, 'Möbelbauen für Anfänger', 'fsdf', '2024-04-19', NULL, 0, 19),
+(23, 'sdfsf', 'sdfsdf', '2024-04-19', NULL, 0, 1),
+(24, 'NEW', 'fsdf', '2024-04-19', NULL, 0, 20),
+(25, 'NEW NEW', 'sfdsf', '2024-04-19', NULL, 0, 1),
+(26, 'NEW 3', 'ffsd', '2024-04-19', NULL, 0, 1),
+(27, 'NEW4', 'fdfsd', '2024-04-19', NULL, 0, 1),
+(28, 'NEW777', 'sdfdsf', '2024-04-19', NULL, 0, 1),
+(29, '999 NEW', 'fdsfsdf', '2024-04-19', NULL, 0, 1),
+(30, '999 NEW', 'fdsfsdf', '2024-04-19', NULL, 0, 1),
+(31, '232323', 'sdfsdf', '2024-04-19', NULL, 0, 1),
+(32, 'sdfsd', 'fsdfsdf', '2024-04-19', NULL, 0, 1),
+(33, 'Learning PHP 2024', 'vxcvxcv', '2024-04-19', NULL, 0, 1),
+(34, 'fdsf', 'sdff', '2024-04-19', NULL, 0, 21),
+(35, 'dgfdg', 'dfgfdg', '2024-04-19', NULL, 0, 1),
+(36, 'fsdfsd', 'vxcvxcv', '2024-04-19', NULL, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -94,6 +111,24 @@ CREATE TABLE `fullview` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `image_test`
+--
+
+CREATE TABLE `image_test` (
+  `image` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `image_test`
+--
+
+INSERT INTO `image_test` (`image`) VALUES
+('test.jpg'),
+('test.jpg');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `rubrik`
 --
 
@@ -109,8 +144,8 @@ CREATE TABLE `rubrik` (
 INSERT INTO `rubrik` (`rid`, `name`) VALUES
 (2, 'Kleidung'),
 (4, 'Elektronik'),
-(5, 'B&uuml;cher'),
-(6, 'M&oumlbel');
+(5, 'Bücher'),
+(6, 'Möbel');
 
 -- --------------------------------------------------------
 
@@ -155,7 +190,11 @@ INSERT INTO `user` (`uid`, `display_name`, `email`, `rolle`) VALUES
 (14, 'Daniel fasfsfffasffdsf', 'testmail@wessdfsdfdfsbsite.asfasfas', 'Nein'),
 (15, 'Daniel Pinckfsdf', 'testmail@websitsdfsfsdfe.de', 'Nein'),
 (16, 'sdfsdf', 'fsdfdsf', 'Nein'),
-(17, 'fsdfds', '325gt', 'Nein');
+(17, 'fsdfds', '325gt', 'Nein'),
+(18, 'fjsdfkj', 'fufjsdjf', '1'),
+(19, 'gdskfgösdk', 'fgksdjofgpsodjf', '1'),
+(20, 'fgdg', 'sdfsdfsd', '1'),
+(21, 'dsfsdfsdfsdfsdf', 'fsdfdsffsdf', '1');
 
 -- --------------------------------------------------------
 
@@ -176,7 +215,31 @@ INSERT INTO `veroeffentlicht` (`rid`, `aid`) VALUES
 (2, 19),
 (4, 19),
 (2, 20),
-(4, 20);
+(4, 20),
+(6, 21),
+(5, 22),
+(6, 22),
+(4, 23),
+(4, 24),
+(4, 25),
+(6, 25),
+(4, 26),
+(2, 27),
+(6, 27),
+(5, 28),
+(4, 29),
+(5, 29),
+(2, 30),
+(4, 30),
+(5, 30),
+(4, 31),
+(4, 32),
+(5, 33),
+(2, 34),
+(4, 34),
+(2, 35),
+(6, 35),
+(2, 36);
 
 -- --------------------------------------------------------
 
@@ -251,7 +314,7 @@ ALTER TABLE `veroeffentlicht`
 -- AUTO_INCREMENT for table `anzeige`
 --
 ALTER TABLE `anzeige`
-  MODIFY `aid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `aid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `book`
@@ -269,7 +332,7 @@ ALTER TABLE `rubrik`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `uid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- Constraints for dumped tables

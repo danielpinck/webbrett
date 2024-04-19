@@ -9,7 +9,11 @@
 </head>
 <body>
   <?php
+    
+    
     include 'functions.php';
+    
+    
     $servername = "localhost";
     $username = "root";
     $password = "";
@@ -22,7 +26,8 @@
   </div>
 
   <div class="flex-header">
-    <div class="header-item-rubrik">ALLE</div>
+    <div class="header-item-rubrik"><a href="layout.php?rubrik=0">ALLE</a></div>
+    <div class="header-item-rubrik"><a href="layout.php">ANZEIGE ERSTELLEN</a></div>
     <?php 
     rubrikMenu($conn);
     ?>
@@ -31,8 +36,18 @@
   <div class="flex-layout">
   <?php 
 
-  showItems($conn);
-  $conn->close();
+  switch (true) {
+    case !isset($_GET["rubrik"]) and empty($_GET["rubrik"]):
+      checkItem($conn);
+      break;
+    case $_GET["rubrik"] == 0:
+      showItems($conn, 0);
+      break;
+    default:
+      
+      showItems($conn, $_GET['rubrik']);
+    }
+    $conn->close();
 
   ?>
 </div>
