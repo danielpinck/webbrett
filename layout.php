@@ -22,7 +22,7 @@
   ?>
   <div class="flex-header">
     <div class="header-item-top">WEBBRETT</div>
-    <div class="header-item-top">2</div>
+    <div class="header-item-top"><img src="./logo.svg" style="height: 120px"></div>
   </div>
 
   <div class="flex-header">

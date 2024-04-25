@@ -10,7 +10,7 @@
   
   // ";
 CREATE VIEW AnzeigeView AS 
-SELECT a.titel, a.date, a.description, u.display_name, u.email
+SELECT a.aid, a.titel, a.date, a.description, a.image, u.display_name, u.email
 FROM anzeige a 
 JOIN user u 
 ON u.uid = a.uid
@@ -23,6 +23,11 @@ SELECT r.name v.aid
 FROM rubrik r
 JOIN veroeffentlicht v
 ON r.rid = v.rid
+
+CREATE VIEW `anzeigeview` AS 
+SELECT a.titel, a.date, a.description, a.image, u.display_name, u.email
+from (`anzeige` `a` join `user` `u` on(`u`.`uid` = `a`.`uid
+
 
   
   // ";

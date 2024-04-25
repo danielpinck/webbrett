@@ -67,7 +67,7 @@ function checkItem($conn) {
   // echo '<form action=' . htmlspecialchars($_SERVER["PHP_SELF"]) . '?' . htmlspecialchars(SID) . ' method="post">';
   echo '<input type="text" name="titel" placeholder="Titel" required><br>';
   echo '<textarea name="description" rows="5" cols="33" placeholder="Beschreibung" required></textarea><br>';
-  // echo '<label for="uploadfile">Bild hinzufügen (optional)</label><input type="file" name="uploadfile"><br>';
+  echo '<label for="uploadfile">Bild hinzufügen (optional)</label><input type="file" name="uploadfile"><br>';
   echo '<input type="text" name="display_name" placeholder="Name" required>';
   echo '<input type="text" name="email" placeholder="E-Mail" required>';
   echo '<input type="hidden" name="privileges" value="1"><br>';
@@ -82,14 +82,14 @@ function checkItem($conn) {
       $display_name = $_POST['display_name'];
       $email = $_POST['email'];
       $privileges = $_POST['privileges'];
-      // $image_name = $_FILES['uploadfile']['name'];
-      // $temp_image_name = $_FILES['uploadfile']['name'];
-      // $image_folder = "./img" - $image_name;
+      $image_name = $_FILES['uploadfile']['name'];
+      $temp_image_name = $_FILES['uploadfile']['name'];
+      $image_folder = "./img" . $image_name;
  
       
       $userCheck = addUser($display_name, $email, $privileges, $conn);
       if ($userCheck) {
-        addItem($titel, $description, $conn, $userCheck);
+        addItem($titel, $description, $conn, $userCheck, $image_name, $temp_image_name, $image_folder);
         
     } else {
         echo "<br><br>Ein Benutzer mit dem Namen <b>" . $display_name . "</b> oder der E-mail <b>" . $email . "</b> existiert bereits.</form>";
@@ -97,10 +97,10 @@ function checkItem($conn) {
   }
   }
 
-function addItem($titel, $description, $conn, $user_id) {
+function addItem($titel, $description, $conn, $user_id, $image_name, $temp_image_name, $image_folder) {
   
 
-  $sql_anzeige = "INSERT INTO anzeige (titel, description, uid) VALUES ('$titel', '$description', '$user_id')";
+  $sql_anzeige = "INSERT INTO anzeige (titel, description, uid, image) VALUES ('$titel', '$description', '$user_id', '$image_name')";
   if(!empty($_POST['rubrik'])) {
     if ($conn->query($sql_anzeige) === TRUE) {
       $insertIdAnzeige = $conn->insert_id;
@@ -108,7 +108,15 @@ function addItem($titel, $description, $conn, $user_id) {
         $sql_rubrik = "INSERT INTO veroeffentlicht (rid, aid) VALUES ('$rubrik_id', $insertIdAnzeige)";
         $conn->query($sql_rubrik);
     }
-          
+    if (move_uploaded_file($temp_image_name, $image_folder)) {
+      echo "<h3>  Image uploaded successfully!</h3>";
+    } else {
+        echo "<h3>  Failed to upload image!</h3>";
+    }
+
+
+
+      
     echo "<br><br>Die Anzeige wurde erfolgreich angelegt. ";
     
   } else {
@@ -150,15 +158,13 @@ function showItems($conn, $rubrik) {
   FROM anzeigeview a
   LEFT JOIN veroeffentlicht v ON a.aid = v.aid
   INNER JOIN rubrik r ON v.rid = r.rid AND r.rid 
-  GROUP BY a.aid
-  ORDER BY a.date DESC";
+  GROUP BY a.aid";
   } else {
     $anzeige_query = "SELECT a.*, GROUP_CONCAT(r.name) AS categories
   FROM anzeigeview a
   LEFT JOIN veroeffentlicht v ON a.aid = v.aid 
   INNER JOIN rubrik r ON v.rid = r.rid AND r.rid = $rubrik
-  GROUP BY a.aid
-  ORDER BY a.date DESC";
+  GROUP BY a.aid";
   }
 
   
@@ -167,7 +173,7 @@ function showItems($conn, $rubrik) {
   if ($anzeige_result->num_rows > 0) {
     while ($row = $anzeige_result->fetch_assoc()) {
         echo '<div class="parent">';
-        echo '<div class="bild"><img src="./img/test.jpg" height="200px"></div>';
+        echo '<div class="bild"><img src="./img/' . $row["image"] . '" height="200px"></div>';
         echo '<div class="titel">' . $row["titel"] . '</div>';
         echo '<div class="beschreibung">ID : ' . $row["aid"] . 'Eingestellt: ' . $row["date"] . '<br>' . $row["description"] . '</div>';
         echo '<div class="email">' . $row["email"] . '/' . $row["display_name"] . '</div>';
